@@ -90,22 +90,10 @@ exports.getAllProfiles = async (req, res, next) => {
     const userId = req.user.id;
     console.log("Getting all profiles for user:", userId);
 
-    // Users that current user has sent a like request to (pending or accepted)
-    const sentRequests = await LikeRequest.find({ from: userId }).distinct("to");
-
-    // Users who sent a like request to current user AND it has been accepted
-    const receivedAcceptedRequests = await LikeRequest.find({
-      to: userId,
-      status: "accepted"
-    }).distinct("from");
-
-    // Combine all user IDs to exclude
-    const excludedUserIds = [userId, ...sentRequests, ...receivedAcceptedRequests];
-
-    // Fetch profiles that are complete and not in excluded list
     const profiles = await CreatorProfile.find({
       isProfileComplete: true,
-      user: { $nin: excludedUserIds },
+      user: { $ne: userId },      // exclude self
+      likedBy: { $ne: userId },   // exclude profiles already liked by this user
     })
       .populate("user", "name profilePic title location bannerImage")
       .select("-__v");
@@ -120,7 +108,6 @@ exports.getAllProfiles = async (req, res, next) => {
     next(error);
   }
 };
-
 
 
 exports.getProfile = async (req, res, next) => {
@@ -172,6 +159,11 @@ exports.likeProfile = async (req, res, next) => {
 
     const likeRequest = await LikeRequest.create({ from: currentUserId, to: profileUserId });
 
+    await CreatorProfile.findOneAndUpdate(
+      { user: profileUserId },
+      { $addToSet: { likedBy: currentUserId } } // $addToSet avoids duplicates
+    );
+
     res.status(200).json({
       success: true,
       data: { isLiked: true, requestId: likeRequest._id }
@@ -210,13 +202,20 @@ exports.respondLikeRequest = async (req, res) => {
     await request.save();
 
     // If accepted, check for mutual like and create chat
-    if (action === 'accepted') {
+    if (action === "accepted") {
+      // Add the accepter's ID to the request sender's likedBy array
+      await CreatorProfile.findOneAndUpdate(
+        { user: request.from },
+        { $addToSet: { likedBy: request.to } } // 'to' is the accepter
+      );
+
+      // Now check if both sides have accepted each other
       const mutualLike = await LikeRequest.findOne({
-  $or: [
-    { from: request.from, to: request.to, status: 'accepted' },
-    { from: request.to, to: request.from, status: 'accepted' }
-  ]
-});
+        $or: [
+          { from: request.from, to: request.to, status: "accepted" },
+          { from: request.to, to: request.from, status: "accepted" },
+        ],
+      });
 
       if (mutualLike) {
         // Create chat if not exists

@@ -47,7 +47,8 @@ const creatorProfileSchema = new mongoose.Schema({
     twitter: { type: String },
     youtube: { type: String },
     hourlyRate: { type: Number, default: 0 },
-    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // users this profile liked
+    likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // users who liked this profile
     projectRate: { type: Number, default: 0 },
     profilePicture: { type: String },
     bannerImage: { type: String },
