@@ -1,10 +1,10 @@
-const Group = require("../models/group");
+const Group = require("../models/Group");
 const { uploadOnCloudinary } = require("../utils/Cloudinary");
 
 // Create a new group
 exports.createGroup = async (req, res) => {
   try {
-    const { name, description } = req.body;
+    const { name, description, category, privacy } = req.body; // include category & privacy
     let imageUrl = "";
 
     // Upload image if provided
@@ -16,6 +16,8 @@ exports.createGroup = async (req, res) => {
     const newGroup = await Group.create({
       name,
       description,
+      category,
+      privacy: privacy || "public", 
       image: imageUrl,
       createdBy: req.user.id,
       members: [req.user.id],
@@ -44,6 +46,8 @@ exports.getAllGroups = async (req, res) => {
       _id: g._id,
       name: g.name,
       description: g.description,
+      category: g.category,
+      privacy: g.privacy,
       image: g.image,
       totalMembers: g.members.length,
       members: g.members,

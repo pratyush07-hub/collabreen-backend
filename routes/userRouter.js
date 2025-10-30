@@ -43,4 +43,6 @@ userRouter.post("/logout", checkAuth, handleUserLogout);
 
 userRouter.get("/currentuser", checkAuth, handleGetCurrentUser);
 
+
+
 module.exports = userRouter;

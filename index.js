@@ -30,10 +30,13 @@ connectMongo(process.env.MONGO_URI);
 
 // Middlewares
 app.use(express.json());
-app.use(cors({
+app.use(
+  cors({
     origin: process.env.CLIENT_URL || "https://collabreen-frontend.vercel.app",
-    credentials: true
-}));
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  })
+);
 
 // Routes
 app.use("/api/user", userRouter);
@@ -48,6 +51,7 @@ app.use('/api/chats', chatRouter);
 app.use('/api/collaborations', require('./routes/collaborationRoutes'));
 app.use('/api/accepted-collaborations', require('./routes/acceptedCollaborationRouter'));
 app.use('/api/groups', require('./routes/groupRoutes'));
+app.use('/api/join-now', require('./routes/joinNowRouter'));
 
 app.use("/uploads", express.static(path.join(__dirname, "routes", "uploads")));
 
