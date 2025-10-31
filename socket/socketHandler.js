@@ -245,7 +245,7 @@ const authMiddleware = (socket, next) => {
 const initializeSocket = (server) => {
     io = socketIO(server, {
         cors: {
-            origin: process.env.CLIENT_URL || 'http://localhost:5173',
+            origin: (process.env.CLIENT_URL || 'http://localhost:5173').trim().replace(/\/$/, ''),
             credentials: true,
             methods: ['GET', 'POST']
         },
