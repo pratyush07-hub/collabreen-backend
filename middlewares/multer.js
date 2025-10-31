@@ -1,6 +1,5 @@
 const multer = require('multer');
 
-// 🔹 Configure Multer for temporary local storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "./public/temp");
@@ -15,6 +14,7 @@ const fileFilter = (req, file, cb) => {
   const allowedTypes = [
     "image/",
     "video/",
+    "audio/",
     "application/pdf",
     "application/msword",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -32,7 +32,6 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// 🔹 Limit file size (20MB)
 const upload = multer({
   storage,
   fileFilter,

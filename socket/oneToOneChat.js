@@ -14,48 +14,78 @@ module.exports = (io, socket, connectedUsers) => {
     });
 
     // Send 1:1 message
-    socket.on('sendMessage', async ({ chatId, content }) => {
-        try {
-            if (!chatId || !content.trim()) return;
+    socket.on("sendMessage", async (data) => {
+  try {
+    const { chatId, content, messageType, audioUrl } = data;
 
-            const chat = await Chat.findById(chatId);
-            if (!chat) return socket.emit('error', { message: 'Chat not found' });
-            if (!chat.participants.includes(socket.userId))
-                return socket.emit('error', { message: 'Unauthorized' });
+    // 1️⃣ Validate chatId
+    if (!chatId) return socket.emit("error", { message: "Chat ID missing" });
 
-            const newMessage = await Message.create({
-                chat: chatId,
-                sender: socket.userId,
-                content: content.trim(),
-                readBy: [socket.userId],
-            });
+    // 2️⃣ Handle message content (optional for audio)
+    const safeContent =
+      messageType === "audio" ? "" : (content || "").trim();
 
-            await newMessage.populate('sender', 'name profilePic');
-            await Chat.findByIdAndUpdate(chatId, { lastMessage: newMessage._id, updatedAt: Date.now() });
+    if (messageType !== "audio" && !safeContent)
+      return socket.emit("error", { message: "Empty message content" });
 
-            io.to(chatId).emit('receiveMessage', newMessage);
+    // 3️⃣ Validate chat and participant
+    const chat = await Chat.findById(chatId);
+    if (!chat)
+      return socket.emit("error", { message: "Chat not found" });
+    if (!chat.participants.includes(socket.userId))
+      return socket.emit("error", { message: "Unauthorized" });
 
-            // Notify offline participants
-            chat.participants
-                .filter((p) => p.toString() !== socket.userId)
-                .forEach((participantId) => {
-                    const sid = connectedUsers.get(participantId.toString());
-                    if (sid) {
-                        io.to(sid).emit('newMessageNotification', {
-                            chatId,
-                            message: newMessage,
-                            from: socket.user.name,
-                        });
-                    }
-                });
-
-            socket.emit('messageSent', { success: true, messageId: newMessage._id });
-            console.log(`Message sent in chat ${chatId} by ${socket.userId}`);
-        } catch (err) {
-            console.error(err);
-            socket.emit('error', { message: 'Failed to send message', details: err.message });
-        }
+    // 4️⃣ Create message
+    const newMessage = await Message.create({
+      chat: chatId,
+      sender: socket.userId,
+      content: safeContent,
+      messageType: messageType || "text",
+      ...(audioUrl && { audioUrl }), // add audioUrl only if present
+      readBy: [socket.userId],
     });
+
+    await newMessage.populate("sender", "name profilePic");
+    await Chat.findByIdAndUpdate(chatId, {
+      lastMessage: newMessage._id,
+      updatedAt: Date.now(),
+    });
+
+    // 5️⃣ Emit to chat room
+    io.to(chatId).emit("receiveMessage", newMessage);
+
+    // 6️⃣ Notify other participants
+    chat.participants
+      .filter((p) => p.toString() !== socket.userId)
+      .forEach((participantId) => {
+        const sid = connectedUsers.get(participantId.toString());
+        if (sid) {
+          io.to(sid).emit("newMessageNotification", {
+            chatId,
+            message: newMessage,
+            from: socket.user.name,
+          });
+        }
+      });
+
+    // 7️⃣ Confirm to sender
+    socket.emit("messageSent", {
+      success: true,
+      messageId: newMessage._id,
+    });
+
+    console.log(
+      `✅ Message (${messageType || "text"}) sent in chat ${chatId} by ${socket.userId}`
+    );
+  } catch (err) {
+    console.error("❌ sendMessage error:", err);
+    socket.emit("error", {
+      message: "Failed to send message",
+      details: err.message,
+    });
+  }
+});
+
 
     // Typing indicator
     socket.on('typing', ({ chatId, isTyping }) => {
