@@ -13,7 +13,7 @@ const influencerRouter = require("./routes/influencerRouter");
 const brandRouter = require("./routes/brandRouter");
 const campaignRouter = require("./routes/campaignRouter");
 const creatorRouter = require('./routes/creatorProfileRoutes');
-const { router: chatRouter } = require('./routes/chatRouter');
+const chatRouter = require('./routes/chatRouter');
 
 require("./crons/influencerCronJobs");
 require("./crons/campaignCronJobs");
@@ -68,5 +68,5 @@ const io = initializeSocket(server);
 
 // Start Server
 server.listen(process.env.PORT, () =>
-    console.log(`✅ Server running at http://localhost:${process.env.PORT}`)
+    console.log(`Server running at http://localhost:${process.env.PORT}`)
 );

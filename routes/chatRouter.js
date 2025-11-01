@@ -30,4 +30,4 @@ module.exports = router;
 // Mark messages as read
 // router.put('/:chatId/messages/read', messageController.markMessagesAsRead);
 
-module.exports = {router};
+// module.exports = {router};

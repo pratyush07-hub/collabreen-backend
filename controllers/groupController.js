@@ -1,5 +1,6 @@
-const Group = require("../models/Group");
-const { uploadOnCloudinary } = require("../utils/Cloudinary");
+
+const Group = require("../models/Group.js");
+const { uploadOnCloudinary } = require("../utils/Cloudinary.js");
 
 // Create a new group
 exports.createGroup = async (req, res) => {
