@@ -1,4 +1,4 @@
-const Group = require('../models/Group');
+const Group = require('../models/group');
 const GroupMessage = require('../models/groupMessage');
 
 module.exports = (io, socket, connectedUsers) => {
