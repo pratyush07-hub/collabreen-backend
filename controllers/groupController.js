@@ -1,5 +1,5 @@
 
-const Group = require("../models/Group.js");
+const Group = require("../models/group.js");
 const { uploadOnCloudinary } = require("../utils/Cloudinary.js");
 
 // Create a new group
