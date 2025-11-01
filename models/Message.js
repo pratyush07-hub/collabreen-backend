@@ -23,6 +23,8 @@ const messageSchema = new mongoose.Schema({
         
     },
     audioUrl: { type: String }, 
+      deletedFor: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // "delete for me"
+  isDeletedForEveryone: { type: Boolean, default: false },
     readBy: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

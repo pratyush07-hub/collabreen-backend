@@ -23,11 +23,9 @@ router.post('/:chatId/messages', messageController.sendMessage);
 
 
 router.post("/:chatId/send-audio", upload.single("audio"), messageController.sendAudioMessage);
+router.delete('/:messageId/delete-for-me', messageController.deleteForMe);
+router.delete('/:messageId/delete-for-everyone', messageController.deleteForEveryone);
+
 
 module.exports = router;
 
-
-// Mark messages as read
-// router.put('/:chatId/messages/read', messageController.markMessagesAsRead);
-
-// module.exports = {router};

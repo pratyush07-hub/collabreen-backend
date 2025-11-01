@@ -80,25 +80,31 @@ exports.getOrCreateChat = async (req, res, next) => {
 
 // Get messages for a chat (for ChatWindow)
 exports.getChatMessages = async (req, res, next) => {
-    try {
-        const { chatId } = req.params;
-        const messages = await Message.find({ chat: chatId })
-            .populate('sender', 'name profilePic')
-            .populate('readBy', 'id')
-            .populate('creatorProfile','profilePicture')
-            .sort({ createdAt: 1 });
+  try {
+    const { chatId } = req.params;
+    const userId = req.user._id || req.user.id;
 
-        // Mark as read for current user
-        await Message.updateMany(
-            { chat: chatId, readBy: { $ne: req.user.id } },
-            { $addToSet: { readBy: req.user.id } }
-        );
+    // ✅ Fetch only messages not deleted for this user
+    const messages = await Message.find({
+      chat: chatId,
+      deletedFor: { $ne: userId }, // <--- Filter here
+    })
+      .populate('sender', 'name profilePic')
+      .populate('readBy', 'id')
+      .populate('creatorProfile', 'profilePicture')
+      .sort({ createdAt: 1 });
 
-        res.status(200).json({
-            success: true,
-            data: messages,
-        });
-    } catch (error) {
-        next(error);
-    }
+    // ✅ Mark messages as read
+    await Message.updateMany(
+      { chat: chatId, readBy: { $ne: userId } },
+      { $addToSet: { readBy: userId } }
+    );
+
+    res.status(200).json({
+      success: true,
+      data: messages,
+    });
+  } catch (error) {
+    next(error);
+  }
 };

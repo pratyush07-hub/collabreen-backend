@@ -1,26 +1,15 @@
 const mongoose = require("mongoose");
 
-const groupMessageSchema = new mongoose.Schema({
-  groupId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Group",
-    required: true,
+const groupMessageSchema = new mongoose.Schema(
+  {
+    groupId: { type: mongoose.Schema.Types.ObjectId, ref: "Group", required: true },
+    sender: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    content: { type: String, trim: true },
+    readBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    deletedFor: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    isDeletedForEveryone: { type: Boolean, default: false },
   },
-  sender: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  content: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  { timestamps: true }
+);
 
-const GroupMessage = mongoose.model("GroupMessage", groupMessageSchema);
-module.exports = GroupMessage;
+module.exports = mongoose.model("GroupMessage", groupMessageSchema);
