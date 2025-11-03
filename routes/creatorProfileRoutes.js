@@ -66,5 +66,7 @@ router.get('/:userId', creatorProfileController.getProfile);
 // Like a profile
 // router.post('/:userId/like', creatorProfileController.likeProfile);
 
+router.put('/update', creatorProfileController.updateProfile);
+
 
 module.exports = router;

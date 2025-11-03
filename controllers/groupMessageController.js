@@ -1,7 +1,9 @@
 const GroupMessage = require("../models/groupMessage");
 const { getIO } = require("../socket/socketHandler");
 
-// 📩 Get all messages for a group
+/* =====================================================
+   📩 Get all messages for a group
+===================================================== */
 exports.getGroupMessages = async (req, res) => {
   const { groupId } = req.params;
   const userId = req.user.id;
@@ -25,22 +27,31 @@ exports.getGroupMessages = async (req, res) => {
   }
 };
 
-// 💬 Send group message
+/* =====================================================
+   💬 Send text message
+===================================================== */
 exports.sendGroupMessage = async (req, res) => {
   try {
     const { groupId, content } = req.body;
     const senderId = req.user.id;
 
+    if (!content || !content.trim()) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Message content required" });
+    }
+
     const message = await GroupMessage.create({
       groupId,
       sender: senderId,
       content,
+      type: "text",
       readBy: [senderId],
     });
 
     await message.populate("sender", "name profilePic");
 
-    // Emit to group via socket
+    // 🔊 Emit via WebSocket
     try {
       const io = getIO();
       io.to(groupId.toString()).emit("receiveGroupMessage", message);
@@ -57,7 +68,49 @@ exports.sendGroupMessage = async (req, res) => {
   }
 };
 
-// 🗑️ Delete for me (only current user)
+/* =====================================================
+   🎙️ Send audio message
+===================================================== */
+exports.sendGroupAudioMessage = async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const senderId = req.user.id;
+
+    if (!req.file)
+      return res.status(400).json({ success: false, message: "No audio file uploaded" });
+
+    const audioUrl = `/uploads/${req.file.filename}`;
+
+    const message = await GroupMessage.create({
+      groupId,
+      sender: senderId,
+      audioUrl,
+      type: "audio",
+      readBy: [senderId],
+    });
+
+    await message.populate("sender", "name profilePic");
+
+    // ✅ Emit via Socket.IO
+    try {
+      const { getIO } = require("../socket/socketHandler");
+      const io = getIO();
+      io.to(groupId.toString()).emit("receiveGroupAudioMessage", message);
+    } catch (e) {
+      console.log("⚠️ WebSocket not available for audio message");
+    }
+
+    res.status(201).json({ success: true, data: message });
+  } catch (err) {
+    console.error("❌ Error sending audio message:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
+/* =====================================================
+   🗑️ Delete message for me (only current user)
+===================================================== */
 exports.deleteGroupMessageForMe = async (req, res) => {
   try {
     const { messageId } = req.params;
@@ -86,7 +139,9 @@ exports.deleteGroupMessageForMe = async (req, res) => {
   }
 };
 
-// 🚮 Delete for everyone (only sender)
+/* =====================================================
+   🚮 Delete message for everyone (only sender)
+===================================================== */
 exports.deleteGroupMessageForEveryone = async (req, res) => {
   try {
     const { messageId } = req.params;
@@ -98,6 +153,7 @@ exports.deleteGroupMessageForEveryone = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Message not found" });
 
+    // Only sender can delete for everyone
     if (message.sender.toString() !== userId.toString()) {
       return res.status(403).json({
         success: false,
@@ -107,6 +163,7 @@ exports.deleteGroupMessageForEveryone = async (req, res) => {
 
     message.isDeletedForEveryone = true;
     message.content = "🚫 This message was deleted";
+    message.audioUrl = null; // remove audio if any
     await message.save();
 
     // 🔁 Notify all clients in group via WebSocket

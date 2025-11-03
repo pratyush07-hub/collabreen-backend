@@ -409,25 +409,75 @@ exports.setupProfile = async (req, res, next) => {
 
 // Update profile
 exports.updateProfile = async (req, res, next) => {
-    try {
-        const userId = req.user.id;
-        const profile = await CreatorProfile.findOneAndUpdate(
-            { user: userId },
-            { $set: req.body },
-            { new: true, runValidators: true }
-        ).populate('user', 'name email');
+  try {
+    const userId = req.user.id;
+    console.log('Updating profile for user:', userId);
+    console.log('Request body:', req.body);
+    console.log('Uploaded files:', req.files);
 
-        if (!profile) return next(new AppError('Profile not found', 404));
+    // Find existing profile
+    const profile = await CreatorProfile.findOne({ user: userId });
+    if (!profile) return next(new AppError('Profile not found', 404));
 
-        res.status(200).json({
-            success: true,
-            data: profile,
-        });
-    } catch (error) {
-        next(error);
+    // Prepare updates from body
+    const updates = {
+      bio: req.body.bio ?? profile.bio,
+      location: req.body.location ?? profile.location,
+      availability: req.body.availability ?? profile.availability,
+      hourlyRate: req.body.hourlyRate ?? profile.hourlyRate,
+      projectRate: req.body.projectRate ?? profile.projectRate,
+      instagram: req.body.instagram ?? profile.instagram,
+      twitter: req.body.twitter ?? profile.twitter,
+      youtube: req.body.youtube ?? profile.youtube,
+      isProfileComplete: true
+    };
+
+    // Handle skills (string or array)
+    if (req.body.skills) {
+      if (Array.isArray(req.body.skills)) {
+        updates.skills = req.body.skills;
+      } else {
+        updates.skills = req.body.skills.split(',').map(s => s.trim());
+      }
     }
-};
 
+    // Handle uploaded images
+    if (req.files?.profilePicture?.length) {
+      const newProfilePic = req.files.profilePicture[0].path;
+
+      // delete old file if exists
+      if (profile.profilePicture && fs.existsSync(profile.profilePicture)) {
+        fs.unlinkSync(profile.profilePicture);
+      }
+      updates.profilePicture = newProfilePic;
+    }
+
+    if (req.files?.bannerImage?.length) {
+      const newBanner = req.files.bannerImage[0].path;
+
+      if (profile.bannerImage && fs.existsSync(profile.bannerImage)) {
+        fs.unlinkSync(profile.bannerImage);
+      }
+      updates.bannerImage = newBanner;
+    }
+
+    // Update in DB
+    const updatedProfile = await CreatorProfile.findOneAndUpdate(
+      { user: userId },
+      { $set: updates },
+      { new: true, runValidators: true }
+    ).populate('user', 'name email');
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully',
+      data: updatedProfile
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    next(error);
+  }
+};
 // creatorProfileController.js
 // exports.likeProfile = async (req, res, next) => {
 //     try {
