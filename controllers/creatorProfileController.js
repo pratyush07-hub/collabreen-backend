@@ -410,6 +410,9 @@ exports.setupProfile = async (req, res, next) => {
 // Update profile
 exports.updateProfile = async (req, res, next) => {
   try {
+    const fs = require("fs");
+const path = require("path"); // also recommended if you handle file paths
+
     const userId = req.user.id;
     console.log('Updating profile for user:', userId);
     console.log('Request body:', req.body);

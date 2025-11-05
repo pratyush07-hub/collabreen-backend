@@ -41,11 +41,20 @@ router.post(
     creatorProfileController.setupProfile
 );
 
+router.put(
+    '/update',
+  upload.fields([
+      { name: 'profilePicture', maxCount: 1 },
+    { name: 'bannerImage', maxCount: 1 }
+]),
+creatorProfileController.updateProfile
+);
+
+router.use(profileCheck);
 
 router.get('/check-status', creatorProfileController.checkProfileStatus); // Move this here!
 
 // Routes that require complete profile (placed AFTER profileCheck middleware)
-router.use(profileCheck);
 
 
 router.post('/:userId/like', creatorProfileController.likeProfile);
@@ -54,7 +63,7 @@ router.put('/like-requests/:requestId/respond', creatorProfileController.respond
 // router.get('/', creatorProfileController.getAllProfiles);
 router.get('/me', creatorProfileController.getMyProfile);
 // router.get('/:userId', creatorProfileController.getProfile);
-router.put('/:userId', creatorProfileController.updateProfile);
+// router.put('/:userId', creatorProfileController.updateProfile);
 router.post('/:userId/like', creatorProfileController.likeProfile);
 
 // Get all profiles for swiping
@@ -66,7 +75,8 @@ router.get('/:userId', creatorProfileController.getProfile);
 // Like a profile
 // router.post('/:userId/like', creatorProfileController.likeProfile);
 
-router.put('/update', creatorProfileController.updateProfile);
+// router.put('/update', creatorProfileController.updateProfile);
+
 
 
 module.exports = router;
