@@ -379,31 +379,93 @@ exports.respondLikeRequest = async (req, res) => {
 //         next(error);
 //     }
 // };
+// exports.setupProfile = async (req, res, next) => {
+//     try {
+//         console.log('Body fields:', req.body);
+//         console.log('Uploaded files:', req.files);
+
+//         const userId = req.user.id;
+
+//         const profileData = {
+//             user: userId,
+//             ...req.body,
+//             profilePicture: req.files?.profilePicture
+//                 ? req.files.profilePicture[0].path
+//                 : null,
+//             bannerImage: req.files?.bannerImage
+//                 ? req.files.bannerImage[0].path
+//                 : null,
+//             isProfileComplete: true,
+//         };
+
+//         const profile = await CreatorProfile.create(profileData);
+
+//         res.status(201).json({ success: true, data: profile });
+//     } catch (error) {
+//         next(error);
+//     }
+// };
+
 exports.setupProfile = async (req, res, next) => {
-    try {
-        console.log('Body fields:', req.body);
-        console.log('Uploaded files:', req.files);
+  try {
+    console.log("Body fields:", req.body);
+    console.log("Uploaded files:", req.files);
 
-        const userId = req.user.id;
+    const userId = req.user.id;
 
-        const profileData = {
-            user: userId,
-            ...req.body,
-            profilePicture: req.files?.profilePicture
-                ? req.files.profilePicture[0].path
-                : null,
-            bannerImage: req.files?.bannerImage
-                ? req.files.bannerImage[0].path
-                : null,
-            isProfileComplete: true,
-        };
+    // Extract body data with fallbacks
+    const {
+      bio,
+      skills,
+      availability,
+      location,
+      hometown,
+      gender,
+      age,
+      languages,
+      instagram,
+      linkedin,
+      twitter,
+      youtube,
+      portfolio,
+      hourlyRate,
+      projectRate,
+    } = req.body;
 
-        const profile = await CreatorProfile.create(profileData);
+    // Build profile data object
+    const profileData = {
+      user: userId,
+      bio,
+      skills,
+      availability,
+      location,
+      hometown,
+      gender,
+      age,
+      languages,
+      instagram,
+      linkedin,
+      twitter,
+      youtube,
+      portfolio,
+      hourlyRate,
+      projectRate,
+      profilePicture: req.files?.profilePicture
+        ? req.files.profilePicture[0].path
+        : null,
+      bannerImage: req.files?.bannerImage
+        ? req.files.bannerImage[0].path
+        : null,
+      isProfileComplete: true,
+    };
 
-        res.status(201).json({ success: true, data: profile });
-    } catch (error) {
-        next(error);
-    }
+    const profile = await CreatorProfile.create(profileData);
+
+    res.status(201).json({ success: true, data: profile });
+  } catch (error) {
+    console.error("Profile setup error:", error);
+    next(error);
+  }
 };
 
 
@@ -424,16 +486,21 @@ const path = require("path"); // also recommended if you handle file paths
 
     // Prepare updates from body
     const updates = {
-      bio: req.body.bio ?? profile.bio,
-      location: req.body.location ?? profile.location,
-      availability: req.body.availability ?? profile.availability,
-      hourlyRate: req.body.hourlyRate ?? profile.hourlyRate,
-      projectRate: req.body.projectRate ?? profile.projectRate,
-      instagram: req.body.instagram ?? profile.instagram,
-      twitter: req.body.twitter ?? profile.twitter,
-      youtube: req.body.youtube ?? profile.youtube,
-      isProfileComplete: true
-    };
+  bio: req.body.bio ?? profile.bio,
+  location: req.body.location ?? profile.location,
+  hometown: req.body.hometown ?? profile.hometown,     // 🆕 Added
+  gender: req.body.gender ?? profile.gender,           // 🆕 Added
+  portfolio: req.body.portfolio ?? profile.portfolio, // 🆕 Added
+  availability: req.body.availability ?? profile.availability,
+  hourlyRate: req.body.hourlyRate ?? profile.hourlyRate,
+  projectRate: req.body.projectRate ?? profile.projectRate,
+  instagram: req.body.instagram ?? profile.instagram,
+  twitter: req.body.twitter ?? profile.twitter,
+  youtube: req.body.youtube ?? profile.youtube,
+  linkedin: req.body.linkedin ?? profile.linkedin,     // 🆕 Added
+  isProfileComplete: true
+};
+
 
     // Handle skills (string or array)
     if (req.body.skills) {

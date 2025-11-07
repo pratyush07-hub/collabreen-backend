@@ -8,7 +8,7 @@ const { sendOTP, sendEmailToUser } = require("../utils/email");
 //SIGNUP
 async function handleUserSignup(req, res) {
   const { name, instaHandle, email, phoneNumber, password, why } = req.body;
-  console.log(req.body)
+  console.log("data", req.body)
 
   if (!phoneNumber || !name || !email || !instaHandle || !password || !why) {
     return res.status(400).json({ msg: "All fields are required" });
@@ -22,6 +22,7 @@ async function handleUserSignup(req, res) {
         { instaHandle: instaHandle },
       ],
     });
+    console.log("user: ", user)
 
     if (user) {
       if (user.email === email) {
@@ -50,6 +51,7 @@ async function handleUserSignup(req, res) {
       why: why,
       profilePic: `https://ui-avatars.com/api/?name=${name}&background=random`,
     });
+    console.log("new user: ", newUser)
 
     if (!newUser) {
       return res.status(500).json({ msg: "Error signing up" });
