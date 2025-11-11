@@ -13,6 +13,7 @@ exports.createGroup = async (req, res) => {
       const uploadResult = await uploadOnCloudinary(req.file.path);
       if (uploadResult) imageUrl = uploadResult.secure_url;
     }
+    console.log("imageUrl", imageUrl)
 
     const newGroup = await Group.create({
       name,
