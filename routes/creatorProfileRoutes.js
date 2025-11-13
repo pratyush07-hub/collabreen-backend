@@ -3,17 +3,14 @@ const router = express.Router();
 const { checkAuth } = require("../middlewares/auth");
 const profileCheck = require("../middlewares/profileCheck");
 const creatorProfileController = require("../controllers/creatorProfileController");
-const { upload } = require("../middlewares/upload"); // ✅ use centralized upload middleware
+const { uploadMulter } = require("../middlewares/multer"); 
 
-// ✅ Protect all routes
+
 router.use(checkAuth);
 
-/* -------------------------------
-   Routes that DON'T require complete profile
--------------------------------- */
 router.post(
   "/setup",
-  upload.fields([
+  uploadMulter.fields([
     { name: "profilePicture", maxCount: 1 },
     { name: "bannerImage", maxCount: 1 },
   ]),
@@ -22,7 +19,7 @@ router.post(
 
 router.put(
   "/update",
-  upload.fields([
+  uploadMulter.fields([
     { name: "profilePicture", maxCount: 1 },
     { name: "bannerImage", maxCount: 1 },
   ]),

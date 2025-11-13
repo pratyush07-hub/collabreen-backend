@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const acceptedCollaborationController = require('../controllers/acceptedCollaborationController');
 const { checkAuth } = require('../middlewares/auth');
-const { upload } = require('../middlewares/multer'); // for file uploads
+const { uploadMulter } = require('../middlewares/multer'); // for file uploads
 
 // Protect all routes
 router.use(checkAuth);
@@ -20,7 +20,7 @@ router.get('/:collaborationId/files', acceptedCollaborationController.getCollabo
 // Upload a file to a collaboration
 router.post(
   '/:collaborationId/upload',
-  upload.single('file'),
+  uploadMulter.single('file'),
   acceptedCollaborationController.uploadCollaborationFile
 );
 

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { upload } = require("../middlewares/multer");
+const { uploadMulter } = require("../middlewares/multer");
 const { upload: audioUpload } = require('../middlewares/upload');
 const { createGroup, getAllGroups, joinGroup, leaveGroup, getGroupById } = require("../controllers/groupController");
 const { checkAuth } = require("../middlewares/auth");
@@ -12,7 +12,7 @@ const { getGroupMessages, sendGroupMessage, deleteGroupMessageForMe, deleteGroup
 router.use(checkAuth);
 
 // POST → Create group with image upload
-router.post("/create", upload.single("image"), createGroup);
+router.post("/create", uploadMulter.single("image"), createGroup);
 
 // GET → Fetch all groups
 router.get("/", getAllGroups);

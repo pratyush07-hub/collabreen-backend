@@ -1,9 +1,11 @@
+
 const CreatorProfile = require('../models/CreatorProfile');
 const mongoose = require('mongoose'); // Import mongoose
 const User = mongoose.model('User'); // Access the User model globally
 const AppError = require('../utils/appError');
 const LikeRequest = require('../models/LikeRequest');
 const Chat = require('../models/Chat');
+const { uploadOnCloudinary } = require('../utils/Cloudinary.js');
 
 // Get all creator profiles (for explore/filter)
 // exports.getAllProfiles = async (req, res, next) => {
@@ -406,7 +408,79 @@ exports.respondLikeRequest = async (req, res) => {
 //     }
 // };
 
+
 exports.setupProfile = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    console.log("req",req.body)
+
+    const {
+      bio,
+      skills,
+      availability,
+      location,
+      hometown,
+      gender,
+      age,
+      languages,
+      instagram,
+      linkedin,
+      twitter,
+      youtube,
+      portfolio,
+      hourlyRate,
+      projectRate,
+    } = req.body;
+
+    // Upload files to Cloudinary if they exist
+
+    console.log(req.files)
+    const profilePictureUpload = req.files?.profilePicture
+  ? await uploadOnCloudinary(req.files.profilePicture[0].path)
+  : null;
+
+const bannerImageUpload = req.files?.bannerImage
+  ? await uploadOnCloudinary(req.files.bannerImage[0].path)
+  : null;
+
+
+      console.log(profilePictureUpload, bannerImageUpload)
+    const profileData = {
+      user: userId,
+      bio,
+      skills,
+      availability,
+      location,
+      hometown,
+      gender,
+      age,
+      languages,
+      instagram,
+      linkedin,
+      twitter,
+      youtube,
+      portfolio,
+      hourlyRate,
+      projectRate,
+      profilePicture: profilePictureUpload?.secure_url || null,
+      bannerImage: bannerImageUpload?.secure_url || null,
+      isProfileComplete: true,
+    };
+
+    console.log("profileData", profileData)
+
+    const profile = await CreatorProfile.create(profileData);
+
+    res.status(201).json({ success: true, data: profile });
+  } catch (error) {
+    console.error("Profile setup error:", error);
+    next(error);
+  }
+};
+
+
+// Update profile
+exports.updateProfile = async (req, res, next) => {
   try {
     console.log("Body fields:", req.body);
     console.log("Uploaded files:", req.files);
@@ -432,17 +506,32 @@ exports.setupProfile = async (req, res, next) => {
       projectRate,
     } = req.body;
 
-    // Build profile data object
-    const profileData = {
-      user: userId,
+    // Upload images to Cloudinary if provided
+    const profilePictureUpload = req.files?.profilePicture
+      ? await uploadOnCloudinary(req.files.profilePicture[0].path)
+      : null;
+
+    const bannerImageUpload = req.files?.bannerImage
+      ? await uploadOnCloudinary(req.files.bannerImage[0].path)
+      : null;
+
+
+    // Prepare data for update
+    const updateData = {
       bio,
-      skills,
+      skills:
+        typeof skills === "string"
+          ? skills.split(",").map((skill) => skill.trim())
+          : skills,
       availability,
       location,
       hometown,
       gender,
       age,
-      languages,
+      languages:
+        typeof languages === "string"
+          ? languages.split(",").map((lang) => lang.trim())
+          : languages,
       instagram,
       linkedin,
       twitter,
@@ -450,102 +539,39 @@ exports.setupProfile = async (req, res, next) => {
       portfolio,
       hourlyRate,
       projectRate,
-      profilePicture: req.files?.profilePicture
-        ? req.files.profilePicture[0].path
-        : null,
-      bannerImage: req.files?.bannerImage
-        ? req.files.bannerImage[0].path
-        : null,
       isProfileComplete: true,
+      rating: 0,
     };
+    console.log("hello", profilePictureUpload, bannerImageUpload)
 
-    const profile = await CreatorProfile.create(profileData);
-
-    res.status(201).json({ success: true, data: profile });
-  } catch (error) {
-    console.error("Profile setup error:", error);
-    next(error);
-  }
-};
-
-
-// Update profile
-exports.updateProfile = async (req, res, next) => {
-  try {
-    const fs = require("fs");
-const path = require("path"); // also recommended if you handle file paths
-
-    const userId = req.user.id;
-    console.log('Updating profile for user:', userId);
-    console.log('Request body:', req.body);
-    console.log('Uploaded files:', req.files);
-
-    // Find existing profile
-    const profile = await CreatorProfile.findOne({ user: userId });
-    if (!profile) return next(new AppError('Profile not found', 404));
-
-    // Prepare updates from body
-    const updates = {
-  bio: req.body.bio ?? profile.bio,
-  location: req.body.location ?? profile.location,
-  hometown: req.body.hometown ?? profile.hometown,     // 🆕 Added
-  gender: req.body.gender ?? profile.gender,           // 🆕 Added
-  portfolio: req.body.portfolio ?? profile.portfolio, // 🆕 Added
-  availability: req.body.availability ?? profile.availability,
-  hourlyRate: req.body.hourlyRate ?? profile.hourlyRate,
-  projectRate: req.body.projectRate ?? profile.projectRate,
-  instagram: req.body.instagram ?? profile.instagram,
-  twitter: req.body.twitter ?? profile.twitter,
-  youtube: req.body.youtube ?? profile.youtube,
-  linkedin: req.body.linkedin ?? profile.linkedin,     // 🆕 Added
-  isProfileComplete: true
-};
-
-
-    // Handle skills (string or array)
-    if (req.body.skills) {
-      if (Array.isArray(req.body.skills)) {
-        updates.skills = req.body.skills;
-      } else {
-        updates.skills = req.body.skills.split(',').map(s => s.trim());
-      }
+    // Update image fields only if uploaded
+    if (profilePictureUpload) {
+      updateData.profilePicture = profilePictureUpload.secure_url;
     }
 
-    // Handle uploaded images
-    if (req.files?.profilePicture?.length) {
-      const newProfilePic = req.files.profilePicture[0].path;
-
-      // delete old file if exists
-      if (profile.profilePicture && fs.existsSync(profile.profilePicture)) {
-        fs.unlinkSync(profile.profilePicture);
-      }
-      updates.profilePicture = newProfilePic;
+    if (bannerImageUpload) {
+      updateData.bannerImage = bannerImageUpload.secure_url;
     }
 
-    if (req.files?.bannerImage?.length) {
-      const newBanner = req.files.bannerImage[0].path;
-
-      if (profile.bannerImage && fs.existsSync(profile.bannerImage)) {
-        fs.unlinkSync(profile.bannerImage);
-      }
-      updates.bannerImage = newBanner;
-    }
-
-    // Update in DB
+    // Update or create profile if it doesn’t exist
     const updatedProfile = await CreatorProfile.findOneAndUpdate(
       { user: userId },
-      { $set: updates },
-      { new: true, runValidators: true }
-    ).populate('user', 'name email');
+      { $set: updateData },
+      { new: true, upsert: true }
+    );
 
     res.status(200).json({
       success: true,
-      message: 'Profile updated successfully',
-      data: updatedProfile
+      message: "Profile updated successfully",
+      data: updatedProfile,
     });
   } catch (error) {
-    console.error('Update profile error:', error);
-    next(error);
+    console.error("Error updating profile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error updating profile",
+      error: error.message,
+    });
   }
 };
 // creatorProfileController.js

@@ -1,4 +1,9 @@
 const multer = require('multer');
+const fs = require("fs");
+const tempDir = "./public/temp";
+
+if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
+
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -32,10 +37,10 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-const upload = multer({
+const uploadMulter = multer({
   storage,
   fileFilter,
   limits: { fileSize: 20 * 1024 * 1024 },
 });
 
-module.exports = { upload };
+module.exports = { uploadMulter };
