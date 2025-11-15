@@ -1,20 +1,29 @@
-const multer = require('multer');
+// multer.js
+const multer = require("multer");
+const os = require("os");
+const path = require("path");
 const fs = require("fs");
-const tempDir = "./public/temp";
 
-if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
+// Serverless-safe temp folder
+const tempDir = path.join(os.tmpdir(), "uploads");
 
+// Create temp folder if it doesn't exist
+if (!fs.existsSync(tempDir)) {
+  fs.mkdirSync(tempDir, { recursive: true });
+}
 
+// Multer storage config
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./public/temp");
+  destination: (req, file, cb) => {
+    cb(null, tempDir);
   },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + "-" + file.originalname);
   },
 });
 
-// 🔹 Allow all common file types
+// File type filter
 const fileFilter = (req, file, cb) => {
   const allowedTypes = [
     "image/",
@@ -30,17 +39,15 @@ const fileFilter = (req, file, cb) => {
 
   const isValid = allowedTypes.some((type) => file.mimetype.startsWith(type));
 
-  if (!isValid) {
-    cb(new Error("Unsupported file type"), false);
-  } else {
-    cb(null, true);
-  }
+  if (!isValid) cb(new Error("Unsupported file type"), false);
+  else cb(null, true);
 };
 
+// Max file size: 20MB
 const uploadMulter = multer({
   storage,
   fileFilter,
   limits: { fileSize: 20 * 1024 * 1024 },
 });
 
-module.exports = { uploadMulter };
+module.exports = { uploadMulter, tempDir };

@@ -11,6 +11,11 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+/**
+ * Uploads a local file to Cloudinary and deletes the local file after upload
+ * @param {string} localFilePath - path to the local file
+ * @returns {Promise<Object|null>} - Cloudinary response object or null if failed
+ */
 const uploadOnCloudinary = async (localFilePath) => {
   if (!localFilePath) return null;
 
@@ -18,25 +23,25 @@ const uploadOnCloudinary = async (localFilePath) => {
 
   try {
     // Upload to Cloudinary
-    const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto",
+    const response = await cloudinary.uploader.upload(absolutePath, {
+      resource_type: "auto", // supports images, videos, audio, etc.
     });
 
     console.log("File uploaded to Cloudinary:", response.secure_url);
 
     // Delete local file safely
-    if (fs.existsSync(absolutePath)) {
-      fs.unlinkSync(absolutePath); // sync delete
-    }
+    fs.promises.unlink(absolutePath).catch(() => {
+      console.warn("Local file deletion failed:", absolutePath);
+    });
 
     return response;
   } catch (error) {
     console.error("Cloudinary upload failed:", error);
 
-    // Clean up local file on error too
-    if (fs.existsSync(absolutePath)) {
-      fs.unlinkSync(absolutePath);
-    }
+    // Attempt cleanup even if upload fails
+    fs.promises.unlink(absolutePath).catch(() => {
+      console.warn("Local file deletion failed after upload error:", absolutePath);
+    });
 
     return null;
   }
