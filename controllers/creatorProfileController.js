@@ -132,7 +132,8 @@ exports.getProfile = async (req, res, next) => {
 exports.getMyProfile = async (req, res, next) => {
     try {
         const profile = await CreatorProfile.findOne({ user: req.user.id })
-            .populate('user', 'name email profilePic');
+            .populate('user', 'name email profilePic')
+            .populate('likes', '_id user');
         if (!profile) return next(new AppError('Profile not found', 404));
 
         res.status(200).json({
