@@ -35,6 +35,7 @@ app.use(
     origin: process.env.CLIENT_URL || "https://collabreen-frontend.vercel.app",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"], 
   })
 );
 
