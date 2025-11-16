@@ -431,6 +431,7 @@ exports.setupProfile = async (req, res, next) => {
       portfolio,
       hourlyRate,
       projectRate,
+      lookingFor
     } = req.body;
 
     // Upload files to Cloudinary if they exist
@@ -463,6 +464,7 @@ const bannerImageUpload = req.files?.bannerImage
       portfolio,
       hourlyRate,
       projectRate,
+      lookingFor,
       profilePicture: profilePictureUpload?.secure_url || null,
       bannerImage: bannerImageUpload?.secure_url || null,
       isProfileComplete: true,
@@ -504,6 +506,7 @@ exports.updateProfile = async (req, res, next) => {
       youtube,
       portfolio,
       hourlyRate,
+      lookingFor,
       projectRate,
     } = req.body;
 
@@ -540,6 +543,7 @@ exports.updateProfile = async (req, res, next) => {
       portfolio,
       hourlyRate,
       projectRate,
+      lookingFor,
       isProfileComplete: true,
       rating: 0,
     };

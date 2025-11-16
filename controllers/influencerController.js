@@ -44,7 +44,7 @@ async function handleInfluencerRegistration(req, res) {
       phoneNumber,
       country,
       message,
-      gender,
+      gender: gender.toLowerCase().trim(),
       platforms,
       user: req.user.id,
       otp:code,
