@@ -391,5 +391,5 @@ module.exports = {
   handleUserResetPassword,
   handleValidateResetToken,
   handleUserLogout,
-  handleGetCurrentUser
+  handleGetCurrentUser,
 };

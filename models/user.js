@@ -71,7 +71,7 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   joinedGroups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Group' }]
-});
+},{ timestamps: true });
 
 const USER = mongoose.model("User", userSchema);
 module.exports = USER;

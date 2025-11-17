@@ -3,6 +3,7 @@ require("dotenv").config();
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const connectMongo = require("./config/connectMongo");
 const path = require("path");
 const userRouter = require("./routes/userRouter");
@@ -14,6 +15,7 @@ const brandRouter = require("./routes/brandRouter");
 const campaignRouter = require("./routes/campaignRouter");
 const creatorRouter = require('./routes/creatorProfileRoutes');
 const chatRouter = require('./routes/chatRouter');
+const adminRouter = require("./routes/adminRouter");
 
 require("./crons/influencerCronJobs");
 require("./crons/campaignCronJobs");
@@ -30,6 +32,7 @@ connectMongo(process.env.MONGO_URI);
 
 // Middlewares
 app.use(express.json());
+app.use(cookieParser());
 app.use(
   cors({
     origin: process.env.CLIENT_URL || "https://collabreen-frontend.vercel.app",
@@ -53,6 +56,7 @@ app.use('/api/collaborations', require('./routes/collaborationRoutes'));
 app.use('/api/accepted-collaborations', require('./routes/acceptedCollaborationRouter'));
 app.use('/api/groups', require('./routes/groupRoutes'));
 app.use('/api/join-now', require('./routes/joinNowRouter'));
+app.use('/api/admin', adminRouter);
 
 app.use("/uploads", express.static(path.join(__dirname, "routes", "uploads")));
 
