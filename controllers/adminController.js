@@ -30,7 +30,7 @@ const adminLogin = async (req, res) => {
   res.cookie("adminToken", token, {
     httpOnly: true, // prevents JS access
     secure: process.env.NODE_ENV === "production", // HTTPS only in production
-    sameSite: "Strict",
+    sameSite: "Lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 
@@ -44,7 +44,7 @@ const adminLogout = (req, res) => {
   res.clearCookie("adminToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "Strict",
+    sameSite: "Lax",
   });
 
   res.status(200).json({
