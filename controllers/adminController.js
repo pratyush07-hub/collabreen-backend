@@ -30,7 +30,7 @@ const adminLogin = async (req, res) => {
   res.cookie("adminToken", token, {
     httpOnly: true, // prevents JS access
     secure: true, // HTTPS only in production
-    sameSite: "Lax",
+    sameSite: "None",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 
@@ -44,7 +44,7 @@ const adminLogout = (req, res) => {
   res.clearCookie("adminToken", {
     httpOnly: true,
     secure: true,
-    sameSite: "Lax",
+    sameSite: "None",
   });
 
   res.status(200).json({
