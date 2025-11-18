@@ -31,6 +31,7 @@ const adminLogin = async (req, res) => {
     httpOnly: true, // prevents JS access
     secure: true, // HTTPS only in production
     sameSite: "None",
+    path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 
@@ -45,6 +46,7 @@ const adminLogout = (req, res) => {
     httpOnly: true,
     secure: true,
     sameSite: "None",
+    path: "/"
   });
 
   res.status(200).json({
