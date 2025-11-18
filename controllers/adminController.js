@@ -29,7 +29,7 @@ const adminLogin = async (req, res) => {
   // Set token in HttpOnly cookie
   res.cookie("adminToken", token, {
     httpOnly: true, // prevents JS access
-    secure: process.env.NODE_ENV === "production", // HTTPS only in production
+    secure: true, // HTTPS only in production
     sameSite: "Lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
@@ -43,7 +43,7 @@ const adminLogin = async (req, res) => {
 const adminLogout = (req, res) => {
   res.clearCookie("adminToken", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
     sameSite: "Lax",
   });
 
