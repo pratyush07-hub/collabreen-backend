@@ -31,7 +31,7 @@ if (!process.env.MONGO_URI || !process.env.PORT) {
 // Connect DB
 connectMongo(process.env.MONGO_URI);
 
-// app.set('trust proxy', 1);
+app.set('trust proxy', 1);
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
