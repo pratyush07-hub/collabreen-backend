@@ -6,6 +6,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const connectMongo = require("./config/connectMongo");
 const path = require("path");
+// const rateLimit = require("express-rate-limit");
 const userRouter = require("./routes/userRouter");
 const testimonialRouter = require("./routes/testimonialRouter");
 const blogRouter = require("./routes/blogRouter");
@@ -30,7 +31,7 @@ if (!process.env.MONGO_URI || !process.env.PORT) {
 // Connect DB
 connectMongo(process.env.MONGO_URI);
 
-app.set('trust proxy', 1);
+// app.set('trust proxy', 1);
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
@@ -66,6 +67,16 @@ app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ message: "Internal Server Error" });
 });
+
+
+// export const adminLoginLimiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   max: 5, // max 5 attempts
+//   message: {
+//     success: false,
+//     message: "Too many login attempts. Try again after 15 minutes.",
+//   },
+// });
 
 const server = http.createServer(app);
 

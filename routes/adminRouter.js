@@ -1,21 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const rateLimit = require("express-rate-limit");
 const { adminCheckAuth } = require("../middlewares/adminAuth");
 const { handleGetAllUsers, adminGetAllGroups, allMatches, allCollaborations, getAllCreators, adminLogin, adminLogout } = require("../controllers/adminController");
+// const { adminLoginLimiter } = require("../index.js");
 
 
-const adminLoginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // max 5 attempts
-  message: {
-    success: false,
-    message: "Too many login attempts. Try again after 15 minutes.",
-  },
-});
-
-
-router.post("/login", adminLoginLimiter, adminLogin);
+router.post("/login", adminLogin);
 router.post("/logout", adminCheckAuth, adminLogout);
 router.get("/allusers", adminCheckAuth, handleGetAllUsers);
 router.get("/allgroups", adminCheckAuth, adminGetAllGroups);
