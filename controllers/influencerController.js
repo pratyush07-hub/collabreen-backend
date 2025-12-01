@@ -11,7 +11,7 @@ const GenerateInstaInsights = require("../utils/GenerateInstaInsights");
 async function handleInfluencerRegistration(req, res) {
   try {
     const {name,instaHandle,email,phoneNumber,country,message,gender} = req.body;
-    console.log("Req.body", req.body);
+    // console.log("Req.body", req.body);
     const platforms =["instagram"]
     if (
       !phoneNumber || !name || !email || !instaHandle || !country || !message || !gender || !platforms){
@@ -25,7 +25,7 @@ async function handleInfluencerRegistration(req, res) {
         { instaHandle }
       ],
     });
-    console.log("Existing Influencer:", existingInfluencer);
+    // console.log("Existing Influencer:", existingInfluencer);
     if (existingInfluencer) {
       return res.status(400).json({
         msg: existingInfluencer.email === email ? "Email is already registered" :
@@ -50,7 +50,7 @@ async function handleInfluencerRegistration(req, res) {
       otp:code,
       otpExpiry:otpExpiry
     });
-    console.log("New Influencer created:", newInfluencer);
+    // console.log("New Influencer created:", newInfluencer);
 
     if (!newInfluencer) {
       return res.status(500).json({ msg: "Error signing up" });
@@ -80,7 +80,7 @@ async function handleInfluencerRegistration(req, res) {
 
 async function handleInfluencerVerification(req, res) {
   const  otp  = req.body.otpCode;
- console.log(otp)
+//  console.log(otp)
   if (!otp) {
     return res.status(400).json({ msg: "OTP is required" });
   }
@@ -145,7 +145,7 @@ async function handleInfluencerInsightsGeneration(req, res) {
     if (!influencer) {
       return res.status(404).json({ msg: "Can't find the registered data" });
     }
-    console.log(`Generating insights for influencer: ${influencer.instaHandle}`);
+    // console.log(`Generating insights for influencer: ${influencer.instaHandle}`);
     try {
       const fetchedData = await GenerateInstaInsights(influencer.instaHandle);
       if (!fetchedData) {
@@ -166,7 +166,7 @@ async function handleInfluencerInsightsGeneration(req, res) {
         lastUpdated: new Date()
       };
       await influencer.save();
-      console.log("Insights saved successfully");
+      // console.log("Insights saved successfully");
       return res.json({
         msg: "Insights generated successfully",
         fetchedData,
@@ -443,7 +443,7 @@ async function handleGetPastCampaigns(req,res) {
 
     return res.json(campaigns);
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return res.status(500).json({ msg: "Error getting campaigns" });
   }
 }
@@ -472,7 +472,7 @@ async function handleGetPastCampaignAnalytics(req,res) {
 
     return res.json(campaignAnalytics,campaignMetrics);
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return res.status(500).json({ msg: "Error getting campaign analytics" });
   }
 }
@@ -490,7 +490,7 @@ async function handleGetOngoingCampaigns(req,res) {
 
     return res.json(campaigns);
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return res.status(500).json({ msg: "Error getting campaigns" });
   }
 }
@@ -518,7 +518,7 @@ async function handleGetOngoingCampaignAnalytics(req,res) {
 
     return res.json({campaignAnalytics,metrics});
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return res.status(500).json({ msg: "Error getting campaign analytics" });
   }
 }

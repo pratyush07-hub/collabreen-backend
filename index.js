@@ -9,6 +9,7 @@ const path = require("path");
 // const rateLimit = require("express-rate-limit");
 const userRouter = require("./routes/userRouter");
 const testimonialRouter = require("./routes/testimonialRouter");
+const supportRoutes = require("./routes/supportRoutes");
 const blogRouter = require("./routes/blogRouter");
 const meetingRouter = require("./routes/meetingRouter");
 const influencerRouter = require("./routes/influencerRouter");
@@ -59,6 +60,9 @@ app.use('/api/accepted-collaborations', require('./routes/acceptedCollaborationR
 app.use('/api/groups', require('./routes/groupRoutes'));
 app.use('/api/join-now', require('./routes/joinNowRouter'));
 app.use('/api/admin', adminRouter);
+
+app.use("/api/support", supportRoutes);
+
 
 app.use("/uploads", express.static(path.join(__dirname, "routes", "uploads")));
 

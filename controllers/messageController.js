@@ -42,7 +42,7 @@ const cloudinary = require("cloudinary").v2;
 // REST API fallback - send message (works alongside WebSocket)
 exports.sendMessage = async (req, res, next) => {
   try {
-    console.log("User is here", req.user);
+    // console.log("User is here", req.user);
     const { chatId } = req.params;
     const { content } = req.body;
     const senderId = req.user.id;
@@ -100,11 +100,6 @@ exports.sendAudioMessage = async (req, res, next) => {
     const { chatId } = req.params;
     const senderId = req.user.id;
 
-    console.log("🎧 Incoming audio message from:", senderId);
-    console.log("📂 File mimetype:", req.file?.mimetype);
-    console.log("📦 File received:", req.file);
-    console.log("🧱 Buffer length:", req.file?.buffer?.length);
-
     if (!req.file) {
       return next(new AppError("No audio file uploaded", 400));
     }
@@ -127,7 +122,7 @@ exports.sendAudioMessage = async (req, res, next) => {
       stream.end(req.file.buffer);
     });
 
-    console.log("Uploaded audio to Cloudinary:", cloudinaryResult.secure_url);
+    // console.log("Uploaded audio to Cloudinary:", cloudinaryResult.secure_url);
 
     // Create message
     const message = await Message.create({

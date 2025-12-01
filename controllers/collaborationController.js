@@ -20,7 +20,7 @@ exports.sendCollaborationRequest = async (req, res, next) => {
 
         if (!receiver) return next(new AppError('Receiver not found', 404));
         const receiverId = receiver._id;
-        console.log("receiverId: ", receiverId)
+        // console.log("receiverId: ", receiverId)
 
         // Check if receiver has complete profile
         const receiverProfile = await CreatorProfile.findOne({ user: receiverId, isProfileComplete: true });
@@ -50,16 +50,16 @@ exports.updateCollaborationRequestStatus = async (req, res, next) => {
         const { requestId } = req.params;
         const { status } = req.body; // 'accepted', 'rejected', etc.
         const userId = req.user.id;
-        console.log('Logged-in user ID:', userId);
+        // console.log('Logged-in user ID:', userId);
 
         const request = await CollaborationRequest.findById(requestId);
-        console.log('Request fetched:', request);
+        // console.log('Request fetched:', request);
         if (!request || request.receiver.toString() !== userId.toString()) {
             return next(new AppError('Unauthorized to update this request', 403));
         }
 
-        console.log('Logged-in user:', userId);
-console.log('Request receiver:', request.receiver.toString());
+        // console.log('Logged-in user:', userId);
+// console.log('Request receiver:', request.receiver.toString());
 
         const updated = await CollaborationRequest.findByIdAndUpdate(
             requestId,

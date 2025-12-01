@@ -245,7 +245,7 @@ async function handleGetPastCampaigns(req,res) {
 
     return res.json(campaigns);
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return res.status(500).json({ msg: "Error getting campaigns" });
   }
 }
@@ -278,7 +278,7 @@ async function handleGetPastCampaignAnalytics(req,res) {
 
     return res.json(campaignAnalytics,campaignMetrics);
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return res.status(500).json({ msg: "Error getting campaign analytics" });
   }
 }
@@ -305,7 +305,7 @@ async function handleGetOngoingCampaigns(req,res) {
 
     return res.json(campaigns);
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return res.status(500).json({ msg: "Error getting campaigns" });
   }
 }
@@ -338,7 +338,7 @@ async function handleGetOngoingCampaignAnalytics(req,res) {
 
     return res.json(campaignAnalytics,campaignMetrics);
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return res.status(500).json({ msg: "Error getting campaign analytics" });
   }
 }

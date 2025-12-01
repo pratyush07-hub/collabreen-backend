@@ -19,7 +19,7 @@ async function sendOTP(subject, email, content) {
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log("Email Sent");
+    // console.log("Email Sent");
   } catch (error) {
     console.error("Error sending OTP:", error);
   }
@@ -34,7 +34,7 @@ async function sendEmailToUser(email, subject, content) {
       html: content,
     };
     await transporter.sendMail(mailOptions);
-    console.log("Email Sent To User");
+    // console.log("Email Sent To User");
   } catch (err) {
     console.error("Error Sending Email", err);
   }

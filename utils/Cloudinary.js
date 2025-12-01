@@ -27,7 +27,7 @@ const uploadOnCloudinary = async (localFilePath) => {
       resource_type: "auto", // supports images, videos, audio, etc.
     });
 
-    console.log("File uploaded to Cloudinary:", response.secure_url);
+    // console.log("File uploaded to Cloudinary:", response.secure_url);
 
     // Delete local file safely
     fs.promises.unlink(absolutePath).catch(() => {

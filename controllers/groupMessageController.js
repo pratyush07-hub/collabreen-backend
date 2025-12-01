@@ -84,8 +84,6 @@ exports.sendGroupAudioMessage = async (req, res) => {
       return res.status(400).json({ success: false, message: "No audio file uploaded" });
     }
 
-    console.log("🎧 Uploading group audio from:", senderId);
-    console.log("📦 File received:", req.file.originalname);
 
     // ✅ Upload to Cloudinary
     const cloudinaryResult = await new Promise((resolve, reject) => {
@@ -99,7 +97,7 @@ exports.sendGroupAudioMessage = async (req, res) => {
       uploadStream.end(req.file.buffer);
     });
 
-    console.log("☁️ Cloudinary Upload Complete:", cloudinaryResult.secure_url);
+    // console.log("☁️ Cloudinary Upload Complete:", cloudinaryResult.secure_url);
 
     const message = await GroupMessage.create({
       groupId,

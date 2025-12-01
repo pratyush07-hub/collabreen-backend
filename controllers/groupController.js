@@ -13,7 +13,7 @@ exports.createGroup = async (req, res) => {
       const uploadResult = await uploadOnCloudinary(req.file.path);
       if (uploadResult) imageUrl = uploadResult.secure_url;
     }
-    console.log("imageUrl", imageUrl)
+    // console.log("imageUrl", imageUrl)
 
     const newGroup = await Group.create({
       name,
@@ -42,7 +42,7 @@ exports.getAllGroups = async (req, res) => {
     const groups = await Group.find()
       .populate("members", "name profilePic email")
       .populate("createdBy", "name profilePic email");
-    console.log(groups);
+    // console.log(groups);
 
     const formattedGroups = groups.map((g) => ({
       _id: g._id,

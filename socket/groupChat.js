@@ -66,7 +66,7 @@ module.exports = (io, socket, connectedUsers) => {
         return socket.emit('error', { message: 'You are not a member of this group' });
 
       socket.join(groupId);
-      console.log(`✅ User ${socket.userId} joined group ${groupId}`);
+      // console.log(`✅ User ${socket.userId} joined group ${groupId}`);
     } catch (err) {
       console.error('joinGroupChat error:', err);
       socket.emit('error', { message: 'Failed to join group' });
@@ -76,7 +76,7 @@ module.exports = (io, socket, connectedUsers) => {
   // 🔴 Leave Group
   socket.on('leaveGroupChat', (groupId) => {
     socket.leave(groupId);
-    console.log(`🚪 User ${socket.userId} left group ${groupId}`);
+    // console.log(`🚪 User ${socket.userId} left group ${groupId}`);
   });
 
   // 💬 Send Text Message
@@ -99,7 +99,7 @@ module.exports = (io, socket, connectedUsers) => {
       io.to(groupId).emit('receiveGroupMessage', newMessage);
 
       socket.emit('messageSent', { success: true, messageId: newMessage._id });
-      console.log('💾 Group text message saved:', newMessage);
+      // console.log('💾 Group text message saved:', newMessage);
     } catch (err) {
       console.error('sendGroupMessage error:', err);
       socket.emit('error', { message: 'Failed to send message' });
@@ -123,7 +123,7 @@ module.exports = (io, socket, connectedUsers) => {
 
     await newAudioMsg.populate('sender', 'name profilePic');
     io.to(groupId).emit('receiveGroupAudio', newAudioMsg);
-    console.log('🎧 Audio message emitted to group:', groupId);
+    // console.log('🎧 Audio message emitted to group:', groupId);
   } catch (err) {
     console.error('sendAudioMessage error:', err);
     socket.emit('error', { message: 'Failed to send audio' });
@@ -143,7 +143,7 @@ module.exports = (io, socket, connectedUsers) => {
       }
 
       socket.emit('messageDeletedForMe', { messageId });
-      console.log(`🗑️ Message ${messageId} deleted for user ${socket.userId}`);
+      // console.log(`🗑️ Message ${messageId} deleted for user ${socket.userId}`);
     } catch (err) {
       console.error('deleteGroupMessageForMe error:', err);
       socket.emit('error', { message: 'Failed to delete message for me' });
@@ -165,7 +165,7 @@ module.exports = (io, socket, connectedUsers) => {
       await msg.save();
 
       io.to(groupId).emit('messageDeletedForEveryone', { messageId });
-      console.log(`🚮 Message ${messageId} deleted for everyone in group ${groupId}`);
+      // console.log(`🚮 Message ${messageId} deleted for everyone in group ${groupId}`);
     } catch (err) {
       console.error('deleteGroupMessageForEveryone error:', err);
       socket.emit('error', { message: 'Failed to delete message for everyone' });

@@ -90,7 +90,7 @@ const { uploadOnCloudinary } = require('../utils/Cloudinary.js');
 exports.getAllProfiles = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    console.log("Getting all profiles for user:", userId);
+    // console.log("Getting all profiles for user:", userId);
 
     const profiles = await CreatorProfile.find({
       isProfileComplete: true,
@@ -100,7 +100,7 @@ exports.getAllProfiles = async (req, res, next) => {
       .populate("user", "name profilePic title location bannerImage")
       .select("-__v");
 
-    console.log("Filtered profiles to return:", profiles.length);
+    // console.log("Filtered profiles to return:", profiles.length);
 
     res.status(200).json({
       success: true,
@@ -179,7 +179,7 @@ exports.likeProfile = async (req, res, next) => {
 // Get pending like requests for current user
 exports.getPendingRequests = async (req, res, next) => {
   try {
-    console.log("fetching pending like requests for user:", req.user.id);
+    // console.log("fetching pending like requests for user:", req.user.id);
     const currentUserId = req.user.id;
     const requests = await LikeRequest.find({ to: currentUserId, status: "pending" })
       .populate("from", "name profilePic");
@@ -196,7 +196,7 @@ exports.respondLikeRequest = async (req, res) => {
   try {
     const { action } = req.body; // 'accepted' or 'rejected'
     const requestId = req.params.requestId;
-    console.log("Responding to like request:", requestId, "Action:", action);
+    // console.log("Responding to like request:", requestId, "Action:", action);
     const request = await LikeRequest.findById(requestId);
 
     if (!request) return res.status(404).json({ success: false, message: 'Request not found' });
@@ -226,7 +226,7 @@ exports.respondLikeRequest = async (req, res) => {
           participants: { $all: [request.from, request.to] },
         });
 
-        console.log("Mutual like found, ensuring chat exists between users.", chat);
+        // console.log("Mutual like found, ensuring chat exists between users.", chat);
         if (!chat) {
           chat = await Chat.create({
             participants: [request.from, request.to],
@@ -413,7 +413,7 @@ exports.respondLikeRequest = async (req, res) => {
 exports.setupProfile = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    console.log("req",req.body)
+    // console.log("req",req.body)
 
     const {
       bio,
@@ -436,7 +436,7 @@ exports.setupProfile = async (req, res, next) => {
 
     // Upload files to Cloudinary if they exist
 
-    console.log(req.files)
+    // console.log(req.files)
     const profilePictureUpload = req.files?.profilePicture
   ? await uploadOnCloudinary(req.files.profilePicture[0].path)
   : null;
@@ -446,7 +446,7 @@ const bannerImageUpload = req.files?.bannerImage
   : null;
 
 
-      console.log(profilePictureUpload, bannerImageUpload)
+      // console.log(profilePictureUpload, bannerImageUpload)
     const profileData = {
       user: userId,
       bio,
@@ -470,7 +470,7 @@ const bannerImageUpload = req.files?.bannerImage
       isProfileComplete: true,
     };
 
-    console.log("profileData", profileData)
+    // console.log("profileData", profileData)
 
     const profile = await CreatorProfile.create(profileData);
 
@@ -485,8 +485,8 @@ const bannerImageUpload = req.files?.bannerImage
 // Update profile
 exports.updateProfile = async (req, res, next) => {
   try {
-    console.log("Body fields:", req.body);
-    console.log("Uploaded files:", req.files);
+    // console.log("Body fields:", req.body);
+    // console.log("Uploaded files:", req.files);
 
     const userId = req.user.id;
 
@@ -547,7 +547,7 @@ exports.updateProfile = async (req, res, next) => {
       isProfileComplete: true,
       rating: 0,
     };
-    console.log("hello", profilePictureUpload, bannerImageUpload)
+    // console.log("hello", profilePictureUpload, bannerImageUpload)
 
     // Update image fields only if uploaded
     if (profilePictureUpload) {

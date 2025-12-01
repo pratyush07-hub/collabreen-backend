@@ -2,12 +2,12 @@ const Campaign = require("../models/campaign");
 const campaignMetrics = require("../models/campaignMetrics");
 
 async function handleCampaignRegister(req,res) {
-    console.log(req.user)
+    // console.log(req.user)
     if(req.user.userRole!="brand"){
         return res.status(403).json({msg:"You can not register a campaign"})
     }
     const {campaignName, preferredContent,category,duration,ageGroup,targetRegion,budget,description} = req.body
-    console.log(req.body)
+    // console.log(req.body)
 
     if(!campaignName || !preferredContent || !category || !duration || !ageGroup || !targetRegion|| !budget || !description){
         return res.status(400).json({msg:"All fields are required"})

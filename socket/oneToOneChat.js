@@ -5,12 +5,12 @@ module.exports = (io, socket, connectedUsers) => {
   // Join a 1:1 chat room
   socket.on("joinChat", (chatId) => {
     socket.join(chatId);
-    console.log(`User ${socket.userId} joined chat: ${chatId}`);
+    // console.log(`User ${socket.userId} joined chat: ${chatId}`);
   });
 
   socket.on("leaveChat", (chatId) => {
     socket.leave(chatId);
-    console.log(`User ${socket.userId} left chat: ${chatId}`);
+    // console.log(`User ${socket.userId} left chat: ${chatId}`);
   });
 
   // Send 1:1 message
@@ -72,11 +72,11 @@ module.exports = (io, socket, connectedUsers) => {
         messageId: newMessage._id,
       });
 
-      console.log(
-        `✅ Message (${messageType || "text"}) sent in chat ${chatId} by ${
-          socket.userId
-        }`
-      );
+      // console.log(
+      //   `✅ Message (${messageType || "text"}) sent in chat ${chatId} by ${
+      //     socket.userId
+      //   }`
+      // );
     } catch (err) {
       console.error("❌ sendMessage error:", err);
       socket.emit("error", {

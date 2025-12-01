@@ -60,7 +60,7 @@ const handleGetAllUsers = async (req, res) => {
   try {
     const users = await USER.find().select("-password");
 
-    console.log("Fetched users:", users);
+    // console.log("Fetched users:", users);
     res.status(200).json({
       success: true,
       count: users.length,

@@ -32,7 +32,7 @@ const createAcceptedCollaboration = async (req, res, next) => {
 const getUserCollaborations = async (req, res, next) => {
   try {
     const userId = req.user?.id;
-    console.log("User ID:", userId);
+    // console.log("User ID:", userId);
 
     if (!userId) return next(new AppError('User not authenticated', 401));
 
@@ -44,7 +44,7 @@ const getUserCollaborations = async (req, res, next) => {
       .populate('receiver', 'name email profilePic')
       .sort({ updatedAt: -1 });
 
-    console.log("Collaborations fetched:", collaborations);
+    // console.log("Collaborations fetched:", collaborations);
 
     res.status(200).json({ success: true, collaborations });
   } catch (error) {
@@ -59,7 +59,7 @@ const uploadCollaborationFile = async (req, res, next) => {
   try {
     const { collaborationId } = req.params;
     const userId = req.user.id;
-    console.log("userid", userId);
+    // console.log("userid", userId);
 
     if (!req.file) return next(new AppError("No file uploaded", 400));
 
@@ -76,7 +76,7 @@ const uploadCollaborationFile = async (req, res, next) => {
       uploadedBy: userId,
     };
 
-    console.log("filedata: ", fileData)
+    // console.log("filedata: ", fileData)
     collaboration.files.push(fileData);
     await collaboration.save();
 

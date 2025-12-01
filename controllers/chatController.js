@@ -27,7 +27,7 @@ const AppError = require('../utils/appError');
 exports.getUserChats = async (req, res) => {
   try {
     const userId = req.user.id;
-    console.log("🔹 Logged in user ID:", userId);
+    // console.log("🔹 Logged in user ID:", userId);
 
     // Fetch all chats where user is a participant
     const chats = await Chat.find({ participants: userId })
@@ -35,7 +35,7 @@ exports.getUserChats = async (req, res) => {
       .populate('lastMessage', 'content createdAt sender')
       .sort({ updatedAt: -1 });
 
-    console.log("✅ Chats found:", chats.length);
+    // console.log("✅ Chats found:", chats.length);
 
     return res.status(200).json({
       success: true,
@@ -57,7 +57,7 @@ exports.getUserChats = async (req, res) => {
 // Get/create chat between two users
 exports.getOrCreateChat = async (req, res, next) => {
     try {
-        console.log("getOrCreateChat called", req.body);
+        // console.log("getOrCreateChat called", req.body);
         const participantId = req.body.participants; // Other user's ID
         const userId = req.user.id;
         let chat = await Chat.findOne({
