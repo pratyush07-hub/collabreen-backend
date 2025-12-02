@@ -18,6 +18,7 @@ const campaignRouter = require("./routes/campaignRouter");
 const creatorRouter = require('./routes/creatorProfileRoutes');
 const chatRouter = require('./routes/chatRouter');
 const adminRouter = require("./routes/adminRouter");
+const volunteerRoutes = require("./routes/VolunteerRoutes");
 
 require("./crons/influencerCronJobs");
 require("./crons/campaignCronJobs");
@@ -60,7 +61,7 @@ app.use('/api/accepted-collaborations', require('./routes/acceptedCollaborationR
 app.use('/api/groups', require('./routes/groupRoutes'));
 app.use('/api/join-now', require('./routes/joinNowRouter'));
 app.use('/api/admin', adminRouter);
-
+app.use("/api/volunteer", volunteerRoutes);
 app.use("/api/support", supportRoutes);
 
 
